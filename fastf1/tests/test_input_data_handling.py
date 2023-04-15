@@ -18,6 +18,11 @@ def test_ergast_lookup_fail():
 
 
 def _test_ergast_lookup_fail():
+    from fastf1.logger import LoggingManager
+    LoggingManager.debug = False
+    # special, relevant on Linux only.
+    # debug=True does not propagate to subprocess on windows
+
     fastf1.Cache.enable_cache('test_cache')
     log_handle = fastf1.testing.capture_log()
 
@@ -25,13 +30,16 @@ def _test_ergast_lookup_fail():
 
     def fail_load(*args, **kwargs):
         raise Exception
-    fastf1.ergast.fetch_results = fail_load  # force function call to fail
 
-    session = fastf1.get_session(2020, 3, 'FP2')  # rainy and short session, good for fast test/quick loading
+    fastf1.ergast.Ergast._get = fail_load  # force function call to fail
+
+    # rainy and short session, good for fast test/quick loading
+    session = fastf1.get_session(2020, 3, 'FP2')
     session.load(telemetry=False, weather=False)
 
-    assert "Failed to load data from Ergast API!" in log_handle.text  # the warning
-    assert "Finished loading data" in log_handle.text  # indicates success
+    # ensure that a warning is shown but overall data loading finishes
+    assert "Failed to load result data from Ergast!" in log_handle.text
+    assert "Finished loading data" in log_handle.text
 
 
 @pytest.mark.f1telapi
@@ -128,3 +136,11 @@ def test_partial_lap_retired_added():
     session.load()
 
     assert session.laps.pick_driver('11').iloc[-1]['FastF1Generated']
+
+
+@pytest.mark.f1telapi
+def test_first_lap_time_added_from_ergast_in_race():
+    session = fastf1.get_session(2022, 1, 'R')
+    session.load(telemetry=False)
+
+    assert not pd.isna(session.laps.pick_lap(1)['LapTime']).any()

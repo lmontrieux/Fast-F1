@@ -1,6 +1,7 @@
 import logging
 import os
 
+from fastf1 import Cache
 import fastf1.testing
 
 
@@ -9,8 +10,7 @@ def test_enable_cache(tmpdir):
 
 
 def _test_enable_cache(tmpdir):
-    import fastf1
-    fastf1.Cache.enable_cache(tmpdir)
+    Cache.enable_cache(tmpdir)
 
 
 def test_cache_used_and_clear(tmpdir):
@@ -29,35 +29,26 @@ def _test_cache_used_and_clear(tmpdir):
         # properly used
 
         # enable fastf1's own pickle cache
-        fastf1.Cache.enable_cache(tmpdir, use_requests_cache=False)
+        Cache.enable_cache(tmpdir, use_requests_cache=False)
 
         with open('fastf1/testing/reference_data/'
-                  'schedule_2020.json', 'rb') as fobj:
+                  'Index2020.json', 'rb') as fobj:
             content = fobj.read()
-        mocker.get('https://raw.githubusercontent.com/theOehrly/'
-                   'f1schedule/master/schedule_2020.json',
+        mocker.get('https://livetiming.formula1.com/static/2020/Index.json',
                    content=content, status_code=200)
 
         # create mock repsonses for general api requests
         with open('fastf1/testing/reference_data/2020_05_FP2/'
                   'ergast_race.raw', 'rb') as fobj:
             content = fobj.read()
-        mocker.get('http://ergast.com/api/f1/2020/5.json',
+        mocker.get('https://ergast.com/api/f1/2020/5.json',
                    content=content, status_code=200)
 
         with open('fastf1/testing/reference_data/2020_05_FP2/'
                   'ergast_race_result.raw', 'rb') as fobj:
             content = fobj.read()
-        mocker.get('http://ergast.com/api/f1/2020/5/results.json',
+        mocker.get('https://ergast.com/api/f1/2020/5/results.json',
                    content=content, status_code=200)
-
-        with open('fastf1/testing/reference_data/2020_05_FP2/'
-                  'map_data.raw', 'rb') as fobj:
-            content = fobj.read()
-        mocker.post('https://www.mapcoordinates.net/admin/component/edit/'
-                    'Vpc_MapCoordinates_Advanced_GoogleMapCoords_Component/'
-                    'Component/json-get-elevation',
-                    content=content, status_code=200)
 
         # rainy and short session, good for fast test/quick loading
         session = fastf1.get_session(2020, 5, 'FP2')
@@ -65,9 +56,10 @@ def _test_cache_used_and_clear(tmpdir):
         # create mock responses for f1 api requests
         req_pages = ['timing_data', 'timing_app_data', 'track_status',
                      'session_status', 'car_data', 'position',
-                     'weather_data', 'driver_list']
+                     'weather_data', 'driver_list', 'race_control_messages']
         for p in req_pages:
-            with open(f'fastf1/testing/reference_data/2020_05_FP2/{p}.raw', 'rb') as fobj:
+            with open(f'fastf1/testing/reference_data/'
+                      f'2020_05_FP2/{p}.raw', 'rb') as fobj:
                 lines = fobj.readlines()
 
             # ensure correct newline character (as expected by api parser)
@@ -91,7 +83,8 @@ def _test_cache_used_and_clear(tmpdir):
                              'session_status_data.ff1pkl',
                              'timing_app_data.ff1pkl', 'timing_data.ff1pkl',
                              'track_status_data.ff1pkl',
-                             'weather_data.ff1pkl']
+                             'weather_data.ff1pkl',
+                             'race_control_messages.ff1pkl']
         # test both ways round
         assert all(elem in expected_dir_list for elem in dir_list)
         assert all(elem in dir_list for elem in expected_dir_list)
@@ -103,5 +96,5 @@ def _test_cache_used_and_clear(tmpdir):
         session.load()
         assert "Using cached data for" in log_handle.text
 
-        fastf1.Cache.clear_cache(tmpdir)  # should delete pickle files
+        Cache.clear_cache(tmpdir)  # should delete pickle files
         assert os.listdir(cache_dir_path) == []

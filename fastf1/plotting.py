@@ -84,7 +84,7 @@ TEAM_COLORS = __TeamColorsWarnDict({
     'alfa romeo': '#900000', 'alphatauri': '#2b4562',
     'haas': '#ffffff', 'williams': '#005aff'
 })
-"""Mapping of team colors (hex color code) to team names.
+"""Mapping of team names to team colors (hex color codes).
 (current season only)"""
 
 TEAM_TRANSLATE: Dict[str, str] = {
@@ -113,7 +113,7 @@ DRIVER_COLORS: Dict[str, str] = {
     "carlos sainz": "#ff8181",
 
     "kevin magnussen": "#ffffff",
-    "nico hulkenburg": "#cacaca",
+    "nico hulkenberg": "#cacaca",
 
     "oscar piastri": "#ff8700",
     "lando norris": "#eeb370",
@@ -127,7 +127,7 @@ DRIVER_COLORS: Dict[str, str] = {
     "alexander albon": "#005aff",
     "logan sargeant": "#012564",
 }
-"""Mapping of driver colors (hex color code) to driver names.
+"""Mapping of driver names to driver colors (hex color codes).
 (current season only)"""
 
 DRIVER_TRANSLATE: Dict[str, str] = {
@@ -137,11 +137,22 @@ DRIVER_TRANSLATE: Dict[str, str] = {
     'GAS': 'pierre gasly', 'OCO': 'esteban ocon',
     'BOT': 'valtteri bottas', 'ZHO': 'zhou guanyu',
     'DEV': 'nyck de vries', 'TSU': 'yuki tsunoda',
-    'MAG': 'kevin magnussen', 'HUL': 'nico hulkenburg',
+    'MAG': 'kevin magnussen', 'HUL': 'nico hulkenberg',
     'ALO': 'fernando alonso', 'STR': 'lance stroll', 'DRU': 'felipe drugovich',
     'HAM': 'lewis hamilton', 'RUS': 'george russell',
     'ALB': 'alexander albon', 'SAR': 'logan sargeant'}
 """Mapping of driver names to theirs respective abbreviations."""
+
+COMPOUND_COLORS: Dict[str, str] = {
+    "SOFT": "da291c",
+    "MEDIUM": "ffd12e",
+    "HARD": "f0f0ec",
+    "INTERMEDIATE": "43b02a",
+    "WET": "0067ad",
+    "UNKNOWN": "00ffff",
+}
+"""Mapping of tyre compound names to compound colors (hex color codes).
+(current season only)"""
 
 COLOR_PALETTE: List[str] = ['#FF79C6', '#50FA7B', '#8BE9FD', '#BD93F9',
                             '#FFB86C', '#FF5555', '#F1FA8C']
